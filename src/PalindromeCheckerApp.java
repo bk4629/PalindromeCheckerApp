@@ -1,80 +1,48 @@
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Scanner;
-import java.util.Stack;
-
-interface PalindromeStrategy {
-    boolean check(String str);
-}
-
-class StackStrategy implements PalindromeStrategy {
-    public boolean check(String str) {
-        String normalized = str.replaceAll("\\s+", "").toLowerCase();
-        Stack<Character> stack = new Stack<>();
-        for (char c : normalized.toCharArray())
-            stack.push(c);
-        for (char c : normalized.toCharArray())
-            if (c != stack.pop())
-                return false;
-        return true;
-    }
-}
-
-class DequeStrategy implements PalindromeStrategy {
-    public boolean check(String str) {
-        String normalized = str.replaceAll("\\s+", "").toLowerCase();
-        Deque<Character> deque = new ArrayDeque<>();
-        for (char c : normalized.toCharArray())
-            deque.add(c);
-        while (deque.size() > 1)
-            if (!deque.pollFirst().equals(deque.pollLast()))
-                return false;
-        return true;
-    }
-}
-
-class PalindromeService {
-    private PalindromeStrategy strategy;
-
-    public PalindromeService(PalindromeStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public void setStrategy(PalindromeStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public boolean checkPalindrome(String str) {
-        return strategy.check(str);
-    }
-}
 
 public class PalindromeCheckerApp {
 
+    static boolean method1(String s) {
+        int start = 0;
+        int end = s.length() - 1;
+
+        while (start < end) {
+            if (s.charAt(start) != s.charAt(end))
+                return false;
+            start++;
+            end--;
+        }
+        return true;
+    }
+
+    static boolean method2(String s) {
+        String rev = new StringBuilder(s).reverse().toString();
+        return s.equals(rev);
+    }
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
+
         System.out.println("Palindrome Checker App");
-        System.out.println("UC12: Strategy Pattern for Palindrome Algorithms (Advanced)");
-        System.out.print("Choose Strategy (1-Stack, 2-Deque): ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
+        System.out.println("UC: Performance Comparison of Two Methods");
         System.out.print("Enter a string: ");
-        String input = scanner.nextLine();
 
-        PalindromeStrategy strategy;
-        if (choice == 1)
-            strategy = new StackStrategy();
-        else
-            strategy = new DequeStrategy();
+        String input = sc.nextLine();
 
-        PalindromeService service = new PalindromeService(strategy);
-        boolean result = service.checkPalindrome(input);
+        long start1 = System.nanoTime();
+        boolean r1 = method1(input);
+        long end1 = System.nanoTime();
 
-        if (result)
-            System.out.println("The given string is a palindrome.");
-        else
-            System.out.println("The given string is not a palindrome.");
+        long start2 = System.nanoTime();
+        boolean r2 = method2(input);
+        long end2 = System.nanoTime();
 
-        scanner.close();
+        System.out.println("Input: " + input);
+        System.out.println("Method1 Result: " + r1);
+        System.out.println("Method1 Time (ns): " + (end1 - start1));
+        System.out.println("Method2 Result: " + r2);
+        System.out.println("Method2 Time (ns): " + (end2 - start2));
+
+        sc.close();
     }
 }
